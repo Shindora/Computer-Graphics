@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Three.js</title>
+	<style type="text/css">
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+
+		
+		ul {
+			z-index: 10;
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			background-color: #333;
+		}
+
+		li {
+			float: left;
+		}
+
+		li a,
+		.dropbtn {
+			display: inline-block;
+			color: rgb(190, 190, 190);
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+
+		}
+
+		.name {
+			display: inline-block;
+			color: rgb(255, 255, 255);
+			text-align: center;
+			padding: 14px 16px;
+			text-decoration: none;
+		}
+
+		li a:hover,
+		.dropdown:hover .dropbtn {
+			background-color: rgb(204, 204, 204);
+			color: #333;
+		}
+
+		li.dropdown {
+			display: inline-block;
+
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #f9f9f9;
+			min-width: 160px;
+			box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+			z-index: 1;
+		}
+
+		.dropdown-content a {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+			text-align: left;
+		}
+
+		.dropdown-content a:hover {
+			background-color: #f1f1f1;
+		}
+
+		.dropdown:hover .dropdown-content {
+			display: block;
+		}
+		/* Clear floats after the columns */
+		
+.row:after {
+			content: "";
+			display: table;
+			clear: both;
+		}
+
+		.column-left {
+			z-index: 1000000;
+			float: left;
+			width: 100%;
+			height: max-content;
+		}
+
+		.column-right {
+			z-index: 10000;
+			float: right;
+			width: 26%;
+			padding: 10px;
+			height: 100%;
+		}
+
+		@media screen and (max-width:600px) {
+			.column {
+				width: 100%;
+			}
+		}
+
+		.float-list {
+			position: fixed;
+			width: 36px;
+			top: 60px;
+			left: 10px;
+			border-radius: 5px;
+			text-align: center;
+			background-color: white;
+		}
+
+		.float {
+			margin: 2px;
+			width: 32px;
+			height: 32px;
+			background-color: rgb(212, 212, 212);
+			color: #FFF;
+			border-radius: 5px;
+			text-align: center;
+			box-shadow: 2px 2px 3px #999;
+			display: inline-block;
+		}
+
+		.my-float {
+			margin-top: 22px;
+		}
+
+		topnav{
+			z-index: 100000;
+		}
+		
+
+	</style>
+</head>
+<body style="height: 100%;" style="background-color: rgb(212, 212, 212)">
+	<div>
+		<ul class="float-list">
+			<button class="float" style="background-color: rgb(255, 255, 255)"
+									onclick="if (flag_translate==false) { flag_translate=true;flag_rotate=false;  flag_scale=false;
+									control.space='global'; control.attach( mesh );	control.setMode( 'translate' );isattach=true;}
+											else {flag_translate=false; flag_rotate=false;  flag_scale=false; control.detach(mesh);isattach=false;}">
+											<img title="Translate" src="image/translate.svg">
+										</button>
+			<button class="float" style="background-color: rgb(255, 255, 255)"
+									onclick="if (flag_rotate==false) { flag_rotate=true;flag_translate=false; flag_scale=false;
+									 control.space='local'; control.attach( mesh );	control.setMode( 'rotate' );isattach=true;}
+											else {flag_translate=false; flag_rotate=false; flag_scale=false; control.detach(mesh);isattach=false;}">
+											<img title="Rotate" src="image/rotate.svg">
+											
+										</button>
+			<button class="float" style="background-color: rgb(255, 255, 255)"
+									onclick="if (flag_scale==false) { flag_scale=true; flag_translate=false; flag_rotate=false;
+											control.space='local';control.attach( mesh );	control.setMode( 'scale' );isattach=true;}
+											else {flag_translate=false; flag_rotate=false; flag_scale=false; control.detach(mesh);isattach=false;}">
+											<img title="Scale" src="image/scale.svg">
+											
+										</button>
+		</ul>
+	</div>
+
+	<input id="file-input" type="file" accept="image/*" name="name" onchange="loadFile(event)" onclick="this.value=null;"  style="display: none;" />
+	<script>
+	  var loadFile = function(event) {
+		var output = document.getElementById('file-input');
+		output.src = URL.createObjectURL(event.target.files[0]);
+		
+		texture = new THREE.TextureLoader().load( output.src);
+		//texture = new THREE.TextureLoader().load( "wall.jpg");
+		output.onload = function() {
+		  URL.revokeObjectURL(output.src) // free memory
+		}
+		if (animate4==true){remove_ani4();}
+		if (animate3==true){remove_ani3();}
+		if (animate5==true){remove_ani5();}
+
+		if (control.object==mesh)
+		{control.detach(mesh); meshObj.material=3; meshObj.update();control.attach(mesh);}
+		else {meshObj.material=3; meshObj.update();}
+		//if (control.object==mesh){control.detach(mesh); meshObj.material=3; meshObj.update();control.attach(mesh);}
+		//else {meshObj.material=3; meshObj.update();}
+	  };
+	</script>
+	
+	<div class="topnav" id="myTopnav">
+		<ul>
+			<li class="name">ĐỒ ÁN ĐỒ HỌA 18520184 18520245</li>
+			<!--<li><a href="#home">Home <i class='fas fa-angle-down'></i></a></li>-->
+			<li class="dropdown">
+				<a href="javascript:void(0)" class="dropbtn">Geometry</a>
+				<div class="dropdown-content">
+					<a href="#" onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+
+ if (control.object==mesh){control.detach(mesh); meshObj.geometry=0; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=0; meshObj.update();}">Box</a>
+					<a href="#" onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=1; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=1; meshObj.update();}">Sphere</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=2; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=2; meshObj.update();}">Cylinder</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=3; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=3; meshObj.update();}">Knot</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=4; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=4; meshObj.update();}">Tea</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=5; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=5; meshObj.update();}">Cone</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=6; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=6; meshObj.update();}">Torus</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=7; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=7; meshObj.update();}">Tetrahedron</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=8; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=8; meshObj.update();}">Octahedron</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=9; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=9; meshObj.update();}">Dodecahedron</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=10; meshObj.update();control.attach(mesh);}
+										else {meshObj.geometry=10; meshObj.update();}">Icosahedron</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=11; meshObj.update();control.attach(mesh);}
+										else if (isLoaded) {meshObj.geometry=11; meshObj.update();}">Rabbit</a>
+					<a href="#"onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+if (control.object==mesh){control.detach(mesh); meshObj.geometry=12; meshObj.update();control.attach(mesh);}
+										else if (isLoaded) {meshObj.geometry=12; meshObj.update();}">Chess</a>
+				</div>
+			</li>
+			<li class="dropdown">
+				<a href="javascript:void(0)" class="dropbtn">Surface</a>
+				<div class="dropdown-content">
+					<a href="#" onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+
+										if (control.object==mesh)
+										{control.detach(mesh);isattach=true; meshObj.material=0; meshObj.update();control.attach(mesh);}
+										else {meshObj.material=0; meshObj.update();}">Basic</a>
+					<a href="#" onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+
+										if (control.object==mesh)
+										{control.detach(mesh); isattach=true;meshObj.material=1; meshObj.update();control.attach(mesh);}
+										else {meshObj.material=1; meshObj.update();}">Points</a>
+					<a href="#" onclick="if (animate4==true){remove_ani4();}
+										if (animate3==true){remove_ani3();}
+										if (animate5==true){remove_ani5();}
+
+										if (control.object==mesh)
+										{control.detach(mesh); isattach=true;meshObj.material=2; meshObj.update();control.attach(mesh);}
+										else {meshObj.material=2; meshObj.update();}">Lines</a>
+					<a href="#"onclick="document.getElementById('file-input').click();">Custom</a>
+				</div>
+			</li>
+
+			<li class="dropdown">
+				<a href="javascript:void(0)" class="dropbtn">Light</a>
+				<div class="dropdown-content">
+					<a href="#" onclick="
+					if (animate3==false && animate4==false && animate5==false){
+						
+						lightObj.removeLight();
+						dragCtrl.detach(light);
+						document.removeEventListener('mousemove', onMouseMove, true);
+						orbit.enabled=true;
+						Light1=true;
+
+						if (control.object==mesh)
+										{control.detach(mesh); meshObj.material=4; meshObj.update();control.attach(mesh);}
+										else {meshObj.material=4; meshObj.update();}
+									lightObj.makeLight();
+										planeObj.makePlane();						
+										dragCtrl.attach(light);}
+
+										">Add Light</a>
+					<a href="#" onclick="
+					if (animate3==false && animate4==false && animate5==false){
+						lightObj.removeLight();
+						dragCtrl.detach(light);
+						document.removeEventListener('mousemove', onMouseMove, true);
+						orbit.enabled=true;						
+						if (control.object==mesh)
+										{control.detach(mesh); meshObj.material=4; meshObj.update();control.attach(mesh);}
+										else {meshObj.material=4; meshObj.update();}
+								lightObj.makeLight();
+								planeObj.makePlane();
+								dragCtrl.detach(light);
+								document.addEventListener('mousemove', onMouseMove, true);
+								orbit.enabled=false;
+					}
+								">Light move with cursor</a>				
+					<a href="#"onclick="remove_light()">Remove Light</a>
+				</div>
+			</li>
+			<li class="dropdown">
+				<a href="javascript:void(0)" class="dropbtn">Animation</a>
+				<div class="dropdown-content">
+					<a href="#"onclick="if (animate3==false && animate4==false && animate5==false) {animate1=true;}
+										else {remove_ani3();
+											remove_ani4();
+											remove_ani5();
+											 draw();animate1=true;}">Self Rotate</a>
+					<a href="#"onclick="if (animate3==false && animate4==false && animate5==false) {animate2=true;}
+										else {remove_ani3();
+											remove_ani4();
+											remove_ani5();
+											 	draw();animate2=true;}
+												 ">Rotate around</a>
+					<a href="#"onclick="
+					remove_ani3();
+					remove_ani4(); 
+					remove_ani5(); 
+					animate1=false;animate2=false;animate4=false;animate3=true; animate5=false; 
+					scene.clear();
+					dragCtrl.detach(light);
+					
+					orbit.reset();
+
+					camera.position.x = 0;
+   					camera.position.y = 0;
+   					camera.position.z = 150;
+					camera.position.set(0,0,150);
+					camera.lookAt(new THREE.Vector3(0, 0, 0));
+					orbit.update();
+
+					scene.add(Earth.earthMesh);
+    				scene.add(Moon.pivot);
+   					scene.add(Sun.sunLight);
+					scene.background=Skymap.getCubeTextureLoader();
+    				orbit.autoRotate = true;
+					orbit.autoRotateSpeed = 0.5;
+					">Universe</a>
+					<a href="#"onclick="
+					remove_ani3();
+					remove_ani4(); 
+					remove_ani5(); 
+
+					renderer.toneMapping = THREE.ACESFilmicToneMapping;
+					dragCtrl.detach(light);
+					animate1=false;animate2=false;animate3=false; animate4=true;animate5=false;
+					scene.clear();
+					orbit.reset();
+
+					camera.position.set( 80, 160, 750 );
+					orbit.update();
+
+					orbit.autoRotate = false;
+					WaterObj.makeWater();
+					skyObj.makeSky();
+					horseObj.makeHorse();
+					whaleObj.makeWhale();
+
+					">Ocean</a>
+					<a href="#"onclick="
+					remove_ani3();
+					remove_ani4(); 
+					remove_ani5(); 
+
+					animate1=false;animate2=false;animate3=false; animate4=false;animate5=true;
+					scene.clear();
+					orbit.reset();
+
+					camera.position.set( -100, 0, -300);
+					orbit.update();
+
+					orbit.autoRotate = false;
+					orbit.enabled=false;
+					carObj.makeCar();
+
+					">Car</a>
+					<a href="#"onclick="
+					if (animate3==true){
+						remove_ani3();
+
+					}
+					if (animate4==true){
+
+						remove_ani4();
+
+					}
+					if (animate5==true){
+					remove_ani5();
+					}
+					animate1=false;animate2=false;animate3=false; animate4=false; animate5=false;
+					">Remove animation</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
+	<div class="row">
+		<div class="column-left" id="webgl"></div>
+		<div class="column-right" >column</div>
+
+		</div>
+	</div>
+	
+	<script src="/lib/three.js"></script>
+
+	<script src="/lib/dat.gui.min.js"></script>
+	<script src="/lib/OrbitControls.js"></script>
+	<script src="/lib/InfiniteGridHelper.js"></script>
+	<script src="/lib/TransformControls.js"></script>
+	<script src="/lib/RoomEnvironment.js"></script>
+
+	<script src="/geometries/TeapotGeometry.js"></script>
+	<script src="/geometries/Lensflare.js"></script>
+	<script src="./Water.js"></script>
+	<script src="./Sky.js"></script>
+	<script src="/lib/GLTFLoader.js"></script>
+	<script src="/lib/DRACOLoader.js"></script>
+	<script src="/lib/fflate.min.js"></script>
+	<script src="/lib/FBXLoader.js"></script>
+	<script src="/lib/STLLoader.js"></script>
+	<script src="/lib/OBJLoader.js"></script>
+
+
+	<script src="gui_ck.js"></script>
+	<script src="object_ck.js"></script>
+	<script src="animation3.js"></script>
+	<script src="animation4.js"></script>
+	<script src="animation5.js"></script>
+
+	<script src="onmousemove.js"></script>
+
+
+	<script src="/lib/EffectComposer.js"></script>
+	<script src="/lib/RenderPass.js"></script>
+	<script src="/lib/ShaderPass.js"></script>
+	<script src="/lib/CopyShader.js"></script>
+	<script src="/lib/AfterimageShader.js"></script>
+	<script src="/lib/AfterimagePass.js"></script>
+
+	<script > 
+
+
+	function setup() {
+		clock = new THREE.Clock();
+
+		var W = window.innerWidth, H = window.innerHeight;
+		
+		renderer.shadowMap.enabled = true;
+		renderer.setPixelRatio( window.devicePixelRatio );
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		renderer.setClearColor('rgb(100, 100, 100)',1);
+//document.getElementById("my-gui-container").appendChild(gui.domElement);
+
+
+		document.getElementById("webgl").appendChild(renderer.domElement);
+
+		//camera = new THREE.PerspectiveCamera( 50, W/H, 1, 10000 );
+		
+		orbit= new THREE.OrbitControls(camera,renderer.domElement);
+		control = new THREE.TransformControls( camera, renderer.domElement );
+		dragCtrl = new THREE.TransformControls( camera, renderer.domElement );
+
+		control.space='local';
+		//planeObj.makePlane();
+		window.addEventListener( 'resize', onWindowResize, false );
+		meshObj.make();
+
+		}
+	
+
+
+	function draw() {
+		orbit.reset();
+
+		camera.position.z = 500;
+
+		scene.fog = new THREE.Fog( 'rgb(255,255,55)', 1, 100000 );	
+		scene.add(new THREE.AmbientLight(0x222222)) 
+
+		orbit.autoRotate = false;
+		envObj.makeEnv();
+
+		addGUI();
+
+		//requestAnimationFrame( draw );
+		camera.position.x = ( camera.position.x ) * .05;
+		camera.position.y = THREE.Math.clamp( 0 + ( - 0) * .05, 50, 1000 );
+		camera.lookAt( scene.position );
+		orbit.update();
+
+		scene.add(camera);
+
+		scene.add( mesh );
+		
+		control.enabled=true;
+		control.addEventListener( 'dragging-changed', function ( event ) {
+		orbit.enabled = ! event.value;
+
+		} );
+		scene.add( control );
+		dragCtrl.enabled=true;
+		dragCtrl.addEventListener( 'dragging-changed', function ( event ) {
+		orbit.enabled = ! event.value;
+
+		} );
+		scene.add(dragCtrl);
+		composer = new THREE.EffectComposer( renderer );
+		composer.addPass( new THREE.RenderPass( scene, camera ) );
+
+		afterimagePass = new THREE.AfterimagePass();
+		composer.addPass( afterimagePass );
+
+	
+
+	}
+	function update(renderer, scene, camera, orbit) {
+	
+	if (animate2){
+		composer.render();
+
+	}
+	else{
+		//if (rabbit_geo.length!=0)
+		renderer.render(scene,camera);
+
+	}
+	orbit.update();
+	const delta = clock.getDelta();
+	const time = performance.now() * 0.001;
+
+	if ( animate1 ) {
+
+	mesh.rotation.x += delta * 1;
+	mesh.rotation.y += delta * 0.4;
+	
+	}		
+	if (animate2){
+		
+		if (mesh!=undefined&&mesh.parent!=null)
+		rotateAboutPoint(mesh,pivotPoint,new THREE.Vector3( 0, 0, 1 ).normalize(),0.05,true);
+	}
+	if (animate3){
+
+    	Earth.animate(delta);
+    	Cloud.animate(delta);
+   	 	Moon.animate(delta);
+	}
+	
+	if (animate4){
+		mixer.update( delta );
+		mixer1.update( delta );
+
+		for ( let i = 0; i < morphs.length; i ++ ) {
+
+		const morph = morphs[ i ];
+
+		rotateAboutPoint(morph,pivotPoint_horse,new THREE.Vector3( 0, 1, 0 ).normalize(),-0.02,true);
+		}
+		for ( let i = 0; i < whales.length; i ++ ) {
+
+		const whale_temp = whales[ i ];
+		rotateAboutPoint(whale_temp,pivotPoint_whale,new THREE.Vector3( 1, 0, 0 ).normalize(),0.02,true);
+}
+		water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+	}
+	if (animate5){
+		for ( let i = 0; i < wheels.length; i ++ ) {
+
+			wheels[ i ].rotation.x = -(time * Math.PI);
+
+			}
+
+			if (carModel!=undefined && driver!=undefined)
+				{carModel.position.z = -(( time*200 ) % 2000-( time*100 ) % 2000);
+					driver.position.z = -(( time*200 ) % 2000-( time*100 ) % 2000)-7;
+					camera.lookAt( carModel.position );}
+		}
+	requestAnimationFrame(function() {
+		update(renderer, scene, camera, orbit);
+	});
+	}
+
+	function remove_ani4(){scene.clear();scene.background=null;
+						renderer.toneMapping = THREE.NoToneMapping;
+					 		draw(); 
+							if (Lightvisible==true)
+							{
+								if (Light1==true)
+								{
+								dragCtrl.detach(light);
+								lightObj.makeLight();
+								planeObj.makePlane();	
+								dragCtrl.attach(light);
+								}
+								else{
+									lightObj.makeLight();
+								planeObj.makePlane();	
+								}
+							}
+							/*	lightObj.removeLight();
+								document.removeEventListener('mousemove', onMouseMove, true);
+								orbit.enabled=true;
+								lightObj.makeLight();
+								planeObj.makePlane();						
+							}*/
+							horseObj.delHorse();whaleObj.delWhale();
+						animate4=false;}
+	function remove_ani3(){scene.clear();scene.background=null;
+					 	orbit.autoRotate = false;	draw();
+						if (Lightvisible==true)
+						{
+							if (Light1==true)
+							{
+							dragCtrl.detach(light);
+							lightObj.makeLight();
+							planeObj.makePlane();	
+							dragCtrl.attach(light);
+							}
+							else{
+								lightObj.makeLight();
+							planeObj.makePlane();	
+							}
+						}
+						 animate3=false;}
+	function remove_ani5(){scene.clear();scene.background=null;
+					 	orbit.autoRotate = false; renderer.outputEncoding = THREE.LinearEncoding; draw();
+						if (Lightvisible==true)
+						{
+							if (Light1==true)
+							{
+							dragCtrl.detach(light);
+							lightObj.makeLight();
+							planeObj.makePlane();	
+							dragCtrl.attach(light);
+							}
+							else{
+								lightObj.makeLight();
+							planeObj.makePlane();	
+							}
+						}
+						animate5=false;		orbit.enabled=true;}
+					 
+	function remove_light()
+	{
+		if (animate3==false && animate4==false && animate5==false){
+		if (control.object==mesh){
+		meshObj.material=0; meshObj.update();
+		control.detach(mesh); 
+		lightObj.removeLight();
+		dragCtrl.detach(light);
+		control.attach(mesh);
+		document.removeEventListener('mousemove', onMouseMove, true);
+		orbit.enabled=true;
+
+		}
+		else{ dragCtrl.detach(light); 
+		meshObj.material=0; meshObj.update();
+		lightObj.removeLight();
+		document.removeEventListener('mousemove', onMouseMove, true);
+		orbit.enabled=true;
+
+		}}
+	}
+
+	setup();
+	draw();
+	update(renderer, scene, camera, orbit);
+
+	</script>
+
+</body>
+</html>
